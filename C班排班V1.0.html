@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <title>日历</title>
+    <style type="text/css">
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        #content{
+            width: 100%;
+            height: 780px;
+            margin: auto;
+            position: relative;
+            background: -webkit-linear-gradient(white 70%, green);
+        }
+        #Tabcontent{
+            position: absolute;
+            left: 24%;
+            top:8%;
+            background-color: rgba(110,138,138,0.5);
+            
+        }
+        #Timecontent{
+            height: 100%;
+            width: 22%;
+            position: relative;
+            border-right: 1px solid #ddd;
+
+        }
+        tr,td{
+            width: 170px;
+            height: 60px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        #findBtn{
+            position: absolute;
+            left:-50px;
+            width: 252px;
+            height: 40px;
+            top: 415px;
+            z-index: 10;
+            cursor: pointer;
+            background-color: rgba(13,222,247,1);
+            text-align: center;
+            line-height: 40px;
+            border-bottom-right-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+        #timechoice{
+            position: absolute;
+            left: 25%;
+            top: 50px;
+        }
+        #free{
+            width: 1070px;
+            height: 680px;
+            margin: auto;
+            position: absolute;
+            left: 0px;
+            top: -40px;
+            border-radius: 20px;
+            background:-webkit-linear-gradient(yellow,green,red,blue);
+            -webkit-box-shadow:5px 6px 10px #008;
+       
+        }
+        #freeText{
+            width: 900px;
+            height: 90px;
+            position: absolute;
+            left: 7%;
+            top: 30%;
+            background-color: rgba(125,0,12,0.3);
+            text-align: center;
+            line-height: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 20px;
+            -webkit-box-shadow:5px 5px 10px #008;
+            padding: 10px;
+
+        }
+        h1{
+            text-align: center;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            position: absolute;
+            left: 40%;
+            top: 60%;
+            font-size: 60px;
+            color: #018f00;
+            line-height: 150px;
+            background-color: rgba(0,34,187,0.8);
+            -webkit-box-shadow:0px 8px 10px #008;
+        }
+        .aa{
+            background-color: #ffffcc;
+            font-size: 16px;
+        }
+        .fixColor{
+            background-color: #ccc;
+            font-weight: bold;
+            color: #003366;
+            border:1px solid #ddd;
+            font-size: 18px;
+        }
+        th{
+            border:1px solid #ddd;
+            color: #003366;
+            font-size: 18px;
+        }
+    </style>
+   
+</head>
+ 
+<body>
+    <div id="content">
+        <div id="Timecontent">
+            <div id="timechoice" style="width:400px;margin: auto;"><input id="txtDt" type="text" style="display: none;" /><div id="findBtn">查询</div></div>
+        </div>
+        <div id="Tabcontent">
+            <div id="free">
+                <div id="freeText"></div>
+                <h1>休息</h1>
+             </div>
+            <table  id="tab">
+                <tr class="tabhead">
+                    <th>时间段</th>
+                    <th colspan="2">1#-7#</th>
+                    <th>8#-9#</th>
+                    <th>10#-11#</th>
+                    <th>14#</th>
+                </tr>
+                <tr class="Low" id="L1"></tr>
+                <tr class="Low"></tr>
+                <tr class="Low"></tr>
+                <tr class="Low"></tr>
+                <tr class="Low"></tr>
+                <tr class="Low"></tr>
+                <tr class="Low "></tr> 
+                <tr class="Low"></tr>             
+            </table>
+        </div>
+    </div>
+    
+
+
+    <script type="text/javascript">
+
+    //人员信息字符串
+        var low=document.getElementsByClassName("Low");
+        var headLine=document.getElementById("L1"); 
+        var tab=document.getElementById("tab");  
+        var timeIput=document.getElementById("txtDt");
+        var findBtn=document.getElementById("findBtn");
+        var freebox=document.getElementById("free");
+        var text=document.getElementById("freeText");
+        
+        var strA="<td class='leadtime fixColor'></td>"+
+                "<td class='aa zhangyuming'>张瑜明</td>"+
+                "<td class='aa liurubao'>刘如宝</td>"+
+                "<td class='aa fangyoude'>方友德</td>"+
+                "<td class='aa liuqianfu'>刘前富</td>"+
+                "<td class='aa shuyang'>舒洋</td>";
+        var strB="<td class='leadtime fixColor'></td>"+
+                "<td class='aa xiechenglong'>谢承龙</td>"+
+                "<td class='aa xueyunjin'>薛云金</td>"+
+                "<td class='aa zengcheng'>曾辰</td>"+
+                "<td class='aa guoyuan'>郭缘</td>"+
+                "<td class='aa jialongfei'>贾龙飞</td>";
+        var strC="<td class='leadtime fixColor'></td>"+
+                "<td class='aa linhongping'>林红平</td>"+
+                "<td class='aa wuchengjie'>吴成杰</td>"+
+                "<td class='aa wangxudong'>王旭东</td>"+
+                "<td class='aa hezhaowei'>何兆伟</td>"+
+                "<td class='aa huangnianhong'>黄年洪</td>";
+        var strD="<td class='fix fixColor'>线体日报</td>"+
+                "<td class='ribao aa'></td>"+
+                "<td class='ribao aa'></td>"+
+                "<td class='ribao aa'></td>"+
+                "<td class='ribao aa'></td>"+
+                "<td class='ribao aa'></td>";
+        var strE="<td class='fixColor'>大日报汇总</td>"+
+                "<td class='aa daribao'></td>"+
+                "<td class='fixColor'>表单收取</td>"+
+                "<td class='aa biaodan'></td>"+
+                "<td class='fixColor'>平坦度拍照</td>"+
+                "<td class='aa pingtandu'></td>";
+
+        low[6].innerHTML=strD;low[7].innerHTML=strE;
+        var leadtime=document.getElementsByClassName("leadtime");
+
+        //时间段文本数组
+        var timeDarr=["10:00-12:00","12:00-14:00","14:00-16:00","16:00-17:30","17:30-19:00","19:00-20:30"];
+        var timeNarr=["22:00-00:00","00:00-02:00","02:00-04:00","04:00-05:30","05:30-07:00","07:00-08:30"];
+        var workrun=["1#-7#","8#-9#","10#-11#","14#","",""];
+        var freeText=["世界上只有一种真正的英雄主义，就是认清了生活的真相，仍然热爱它","既然没能赶上时代的潮流，那我们就准备好，到未来等它","做个理性乐观派，既符合理性，又符合情感，还符合利益","半醉半醒，日复一日！花开花落，年复一年！加油！！","对自己好一点，不仅要给自己物质享受外，还要给自己心灵松绑","没人喜欢只知道索取不知道付出的崇拜者，与其想着自己想要什么，倒不如多想想自己能给别人什么","理解他人才不会固执于自己的视角，才有足够的思维弹性，技能充分理性地跟人沟通，也能照顾到别人的情绪！"];
+
+        var today=new Date();
+        var startTime=new Date(2019,3,30);
+        var timediff=today-startTime;
+        var day=Math.floor(timediff/1000/3600/24);//向上取整
+        var num2=day%12;//白夜班切换
+        var num1=day%18;//线体人员安排
+        var num3=day%6-1;//大日报汇总 
+        var num4=day%24;//平坦度 
+        var rdnum1=Math.floor(Math.random()*6);
+
+       if(num1==1||num1==4||num1==9||num1==14){
+            low[0].innerHTML=strA;low[3].innerHTML=strA;
+            low[1].innerHTML=strB;low[4].innerHTML=strB;
+            low[2].innerHTML=strC;low[5].innerHTML=strC;
+            tab.style.display="block";
+            freebox.style.display="none";
+        }
+        else if(num1==2||num1==7||num1==10||num1==15){
+            low[0].innerHTML=strC;low[3].innerHTML=strC;
+            low[1].innerHTML=strA;low[4].innerHTML=strA;
+            low[2].innerHTML=strB;low[5].innerHTML=strB;
+            tab.style.display="block";
+            freebox.style.display="none";      
+        }
+        else if(num1==3||num1==8||num1==13||num1==16){
+            low[0].innerHTML=strB;low[3].innerHTML=strB;
+            low[1].innerHTML=strC;low[4].innerHTML=strC;
+            low[2].innerHTML=strA;low[5].innerHTML=strA;
+            tab.style.display="block";
+            freebox.style.display="none";
+        }
+        else if(num1==5||num1==6||num1==11||num1==12||num1==17||num1==0){
+            tab.style.display="none";
+            freebox.style.display="block";
+            text.innerHTML=freeText[rdnum1];
+        }
+        
+        //白夜班时间段
+        if(num2>=1&&num2<=4){
+            for(let i=0;i<6;i++){
+                leadtime[i].innerHTML=timeDarr[i];//当天日报汇总人员
+            }
+        }else if(num2>=7&&num2<=10){
+            for(let i=0;i<6;i++){
+                leadtime[i].innerHTML=timeNarr[i];//当天日报汇总人员
+            }
+        }
+        for(let i=0;i<5;i++){
+           document.getElementsByClassName("ribao")[i].innerHTML=headLine.getElementsByClassName("aa")[i].innerHTML;//当天日报汇总人员
+        }
+        document.getElementsByClassName("daribao")[0].innerHTML=workrun[num3];
+        Text(num4,1,6,0);
+        Text(num4,7,12,1);
+        Text(num4,13,18,2);
+        Text(num4,19,24,3);
+        
+        findBtn.addEventListener('click',function() {
+            var timeArr=(timeIput.value).split("/");  
+            console.log(timeArr);
+            var nowDay=new Date(timeIput.value);
+            console.log(nowDay);
+            var timediff=nowDay-startTime;
+            var day=Math.floor(timediff/1000/3600/24);
+            var num1=day%18;//线体人员安排   
+            var num2=day%12;//白夜班切换
+            var num3=day%6-1;//大日报汇总
+            var num4=day%24;//平坦度
+            var rdnum2=Math.floor(Math.random()*6)
+             
+
+            if(num1==1||num1==4||num1==9||num1==14){
+                low[0].innerHTML=strA;low[3].innerHTML=strA;
+                low[1].innerHTML=strB;low[4].innerHTML=strB;
+                low[2].innerHTML=strC;low[5].innerHTML=strC;
+                tab.style.display="block";
+                freebox.style.display="none";
+            }
+            else if(num1==2||num1==7||num1==10||num1==15){
+                low[0].innerHTML=strC;low[3].innerHTML=strC;
+                low[1].innerHTML=strA;low[4].innerHTML=strA;
+                low[2].innerHTML=strB;low[5].innerHTML=strB;  
+                tab.style.display="block";  
+                freebox.style.display="none";  
+            }
+            else if(num1==3||num1==8||num1==13||num1==16){
+                low[0].innerHTML=strB;low[3].innerHTML=strB;
+                low[1].innerHTML=strC;low[4].innerHTML=strC;
+                low[2].innerHTML=strA;low[5].innerHTML=strA;
+                tab.style.display="block";
+                freebox.style.display="none";
+            }
+            else if(num1==5||num1==6||num1==11||num1==12||num1==17||num1==0){
+                tab.style.display="none";
+                freebox.style.display="block";
+                text.innerHTML=freeText[rdnum2];
+            }
+            //白夜班时间段
+            if(num2>=1&&num2<=4){
+                for(let i=0;i<6;i++){
+                    leadtime[i].innerHTML=timeDarr[i];//当天日报汇总人员
+                }
+            }else if(num2>=7&&num2<=10){
+                for(let i=0;i<6;i++){
+                    leadtime[i].innerHTML=timeNarr[i];//当天日报汇总人员
+                    document.getElementsByClassName("tabhead")[0].style.backgroundColor="#3366cc";
+                }
+            }
+            for(let i=0;i<5;i++){
+                document.getElementsByClassName("ribao")[i].innerHTML=headLine.getElementsByClassName("aa")[i].innerHTML;//当天日报汇总人员
+             }   
+            document.getElementsByClassName("daribao")[0].innerHTML=workrun[num3];
+
+
+            Text(num4,1,6,0);
+            Text(num4,7,12,1);
+            Text(num4,13,18,2);
+            Text(num4,19,24,3);
+        })
+        function Text(a,b,c,d){
+                if(a>=b&&a<=c){
+                    document.getElementsByClassName("biaodan")[0].innerHTML=workrun[d];
+                    document.getElementsByClassName("pingtandu")[0].innerHTML=workrun[d];
+                }
+        }
+
+
+//日期选择插件
+        (function (){
+        function Dt(selector) {
+          return new Dt.fn.init(selector);
+        }
+     
+        Dt.fn = Dt.prototype = {
+          constructor: Dt,
+          initialize: false,
+          init: function (selector) {
+            if(selector.indexOf('#') > -1){
+              this[0] = document.getElementById(selector.substring(1));
+            } else {
+              var aryEle = document.querySelectorAll(selector);
+              for(var i = 0; i <  aryEle.length; i++){
+                this[i] = aryEle[i];
+              }
+            }
+            return this;
+          },
+          render: function(opt) {
+            
+            var regExpDt = /^\d{4}([-/]?)\d{1,2}\1\d{1,2}(?:\s+(?:[01]?\d)|(?:2[0-3])\:[0-5]?\d\:[0-5]?\d)?$/;
+            if(Object.prototype.toString.apply(opt.value) == '[object Date]') {
+              this.value = opt.value.getFullYear() + '/' + (opt.value.getMonth() + 1) + '/' + opt.value.getDate();
+              this.date = opt.value;
+              this.initialize = true;
+            } else if(Object.prototype.toString.apply(opt.value) == '[object String]') {
+              this.value = regExpDt.test(opt.value) ? opt.value : '';
+              this.date = new Date(opt.value);
+              this.initialize = true;
+            } else {
+              this.value = '';
+              this.date = new Date();
+            }
+            this.year = this.date.getFullYear();
+            this.month = this.date.getMonth() + 1;
+            this.day = this.date.getDate();
+            this.hour = this.date.getHours();
+            this.minute = this.date.getMinutes();
+            this.second = this.date.getSeconds();
+            this.week = this.date.getDay() == 0 ? 7 : this.date.getDay();
+            this.getFirstdateInMonth = function() {
+              return new Date(this.date.getFullYear(), this.date.getMonth(), 1);
+            }
+            this.getCalDate = function(dt, type, num) {
+              var dtRtn = new Date();
+              dtRtn = dt;
+              switch (type) {
+                case 'Y':
+                  dtRtn = new Date(dt.getFullYear() + num, dt.getMonth(), dt.getDate());
+                  break;
+                case 'M':
+                  dtRtn = new Date(dt.getFullYear(), dt.getMonth() + num, dt.getDate());
+                  break;
+                case 'D':
+                  dtRtn = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() + num);
+                  break;
+                default:
+                  break;
+              }
+              return dtRtn;
+            }
+            this.getLastdateInMonth = function() {
+              var dtRtn = new Date();
+              var dtFirstdateInNextmonth = new Date(this.date.getFullYear(), this.date.getMonth() + 1, 1);
+              dtRtn = this.getCalDate(dtFirstdateInNextmonth, 'D', -1);
+              return dtRtn;
+            }
+            this.count = this.getLastdateInMonth().getDate();
+            this.formatDate = function(type) {
+              var strRtn = '',
+                  strYear = '',
+                  strMonth = '',
+                  strDay = '';
+              strYear = this.date.getFullYear();
+              strMonth = (this.date.getMonth() + 1).toString().length < 2 ? '0' + (this.date.getMonth() + 1) : (this.date.getMonth() + 1);
+              strDay = this.date.getDate().toString().length < 2 ? '0' + this.date.getDate() : this.date.getDate();
+              switch(type.toString().toUpperCase()) {
+                case 'YYYYMMDD':
+                  strRtn = strYear + strMonth + strDay;
+                  break;
+                case 'YYYY/MM/DD':
+                  strRtn = strYear + '/' + strMonth + '/' + strDay;
+                  break;
+                case 'YYYY-MM-DD':
+                  strRtn = strYear + '-' + strMonth + '-' + strDay;
+                  break;
+                default:
+                  strRtn = strYear + '/' + strMonth + '/' + strDay;
+                  break;
+              }
+              return strRtn;
+            }
+            return this;
+          }
+        };
+        Dt.fn.init.prototype = Dt.fn;
+     
+        Dt.fn.extend = Dt.extend = function () {
+          var len = arguments.length,
+              i = 1,
+              j,
+              objRtn = arguments[0];
+          for(;i < len;i++){
+            for(var j in arguments[i]){
+              objRtn[j] = arguments[i][j];
+            }
+          }
+          return objRtn;
+        }
+     
+        Dt.fn.create = Dt.create = function() {
+          this.render(arguments[0]);
+          createDateList.call(this);
+        }
+     
+        function insertAfter(target, node) {
+          //node.style.left = target.offsetLeft + "px";
+          if(target.parentNode.children.length == 1) {
+            target.parentNode.appendChild(node);
+          } else {
+            target.parentNode.insertBefore(node, target.nextSibling);
+          }
+        }
+     
+        function setStyle(target, opts) {
+          for(var item in opts){
+            target.style[item] = opts[item];
+          }
+        }
+     
+        function createHeader() {
+          var me = this;
+          var divHeader = document.createElement('div');
+          setStyle(divHeader, {
+            height: '30px',
+            borderBottom: '1px solid silver',
+            position: 'relative',
+            backgroundColor: 'rgba(214,222,247,1)',
+            borderRadius: '4px',
+          });
+          var btnLastMonth = document.createElement('div');
+          btnLastMonth.title = "上月";
+          btnLastMonth.onclick = function() {
+            var speed_last_month = 1;
+            var speed_current_month = 1;
+            var b_last_month = false;
+            var b_current_month = false;
+            var next_month_left = parseInt(me.content.nextMonth.component.style.left);
+            var timer = setInterval(function() {
+              if(!b_last_month) {
+                if(parseInt(me.Container.children[1].style.left) < 0) {
+                  me.Container.children[1].style.left = parseInt(me.Container.children[1].style.left) + Math.floor(5 / speed_last_month) + 'px';
+                  speed_last_month += 0.01;
+                } else {
+                  b_last_month = !b_last_month;
+                }
+              }
+              if(!b_current_month) {
+                if(parseInt(me.Container.children[2].style.left) < next_month_left) {
+                  me.Container.children[2].style.left = parseInt(me.Container.children[2].style.left) + Math.floor(5 / speed_current_month) + 'px';
+                  speed_current_month += 0.01;
+                } else {
+                  b_current_month = !b_current_month;
+                }
+              }
+              if(b_last_month && b_current_month) {
+                clearInterval(timer);
+                me.date = me.getFirstdateInMonth();
+                me.date = me.getCalDate(me.date, 'M', -1);
+                me.render({value: me.date});
+                var objContent = createContent.call(me);
+                me.Container.removeChild(me.Container.children[3]);
+                me.Container.insertBefore(objContent.lastMonth.component, me.Container.children[0].nextSibling);
+                me.Container.replaceChild(objContent.nextMonth.component, me.Container.children[3]);
+                me.Container.children[2].style.left = 0;
+                me.Container.children[2].style.position = 'absolute';
+                me.Container.children[3].style.left = '250px';
+                me.Container.children[3].style.position = 'relative';
+                me.content.nextMonth = objContent.nextMonth;
+                me.content.nextMonth.left = 250;
+                me.content.currentMonth = me.content.lastMonth;
+                me.content.currentMonth.left = 0;
+                me.content.lastMonth = objContent.lastMonth;
+                me.content.lastMonth.left = -275;
+                me.header.children[2].innerHTML = me.formatDate(me.getFirstdateInMonth());
+                me[0].value = me.formatDate(me.getFirstdateInMonth());
+              }
+            }, 10);
+          }
+          setStyle(btnLastMonth, {
+            cursor: 'pointer',
+            height: '30px',
+            border: 0,
+            display: 'inline',
+            width: '30px',
+            position: 'absolute',
+            left: 0
+          });
+          var canvas_last_month = document.createElement('canvas');
+          if(canvas_last_month.getContext('2d')) {
+            canvas_last_month.height = 30;
+            canvas_last_month.width = 30;
+            var ctx = canvas_last_month.getContext('2d');
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(214,222,247,1)';
+            ctx.fillRect(0, 0, 30, 30);
+            ctx.strokeStyle = 'rgba(251,251,251,1)';
+            ctx.fillStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.moveTo(7, 0);
+            ctx.lineTo(15, 0);
+            ctx.lineTo(8, 15);
+            ctx.lineTo(15, 30);
+            ctx.lineTo(7, 30);
+            ctx.lineTo(0, 15);
+            ctx.lineTo(7, 0);
+     
+
+            ctx.fill();
+            ctx.stroke();
+            btnLastMonth.appendChild(canvas_last_month);
+          } else {
+            btnLastMonth.innerHTML = "<";
+            setStyle(btnLastMonth, {
+              backgroundColor: 'rgba(214,222,247,1)'
+            });
+          }
+     
+          var btnLastDay = document.createElement('div');
+          btnLastDay.title = "昨日";
+          btnLastDay.onclick = function() {
+            if(me.getCalDate(me.date, 'D', -1).getMonth() + 1 == me.month) {
+              me.date = me.getCalDate(me.date, 'D', -1);
+              me.render({value: me.date});
+              var objContent = createContent.call(me);
+              me.Container.replaceChild(objContent.currentMonth.component, me.Container.children[2]);
+              me.header.children[2].innerHTML = me.formatDate(me.date);
+              me[0].value = me.formatDate(me.date);
+            } else {
+              var speed_last_month = 1;
+              var speed_current_month = 1;
+              var b_last_month = false;
+              var b_current_month = false;
+              var next_month_left = parseInt(me.content.nextMonth.component.style.left);
+     
+              me.date = me.getCalDate(me.date, 'D', -1);
+              me.render({value: me.date});
+              var objContent = createContent.call(me);
+              me.Container.replaceChild(objContent.currentMonth.component, me.Container.children[1]);
+              me.Container.children[1].style.left = '-275px';
+              var timer = setInterval(function() {
+                if(!b_current_month) {
+                  if(parseInt(me.Container.children[2].style.left) < next_month_left) {
+                    me.Container.children[2].style.left = parseInt(me.Container.children[2].style.left) + Math.floor(5 / speed_current_month) + 'px';
+                    speed_current_month += 0.01;
+                  } else {
+                    b_current_month = !b_current_month;
+                  }
+                }
+                if(!b_last_month) {
+                  if(parseInt(me.Container.children[1].style.left) < 0) {
+                    me.Container.children[1].style.left = parseInt(me.Container.children[1].style.left) + Math.floor(5 / speed_last_month) + 'px';
+                    speed_last_month += 0.01;
+                  } else {
+                    b_last_month = !b_last_month;
+                  }
+                }
+                if(b_last_month && b_current_month) {
+                  clearInterval(timer);
+                  me.Container.removeChild(me.Container.children[3]);
+                  me.Container.insertBefore(objContent.lastMonth.component, me.Container.children[0].nextSibling);
+                  me.Container.replaceChild(objContent.nextMonth.component, me.Container.children[3]);
+                  me.Container.children[2].style.left = 0;
+                  me.Container.children[2].style.position = 'absolute';
+                  me.Container.children[3].style.left = '250px';
+                  me.Container.children[3].style.position = 'relative';
+                  me.content.nextMonth = objContent.nextMonth;
+                  me.content.nextMonth.left = 250;
+                  me.content.currentMonth = me.content.lastMonth;
+                  me.content.currentMonth.left = 0;
+                  me.content.lastMonth = objContent.lastMonth;
+                  me.content.lastMonth.left = -275;
+                  me.header.children[2].innerHTML = me.formatDate(me.getFirstdateInMonth());
+                  me[0].value = me.formatDate(me.getFirstdateInMonth());
+                }
+              }, 10);
+            }
+          }
+          setStyle(btnLastDay, {
+            cursor: 'pointer',
+            height: '30px',
+            width: '30px',
+            display: 'inline',
+            position: 'absolute',
+            left: '31px'
+          });
+          var canvas_last_day = document.createElement('canvas');
+          if(canvas_last_day.getContext('2d')) {
+            canvas_last_day.height = 30;
+            canvas_last_day.width = 30;
+            var ctx = canvas_last_day.getContext('2d');
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(214,222,247,1)';
+            ctx.fillRect(0, 0, 30, 30);
+            ctx.strokeStyle = 'rgba(251,251,251,1)';
+            ctx.fillStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.moveTo(11, 0);
+            ctx.lineTo(19, 0);
+            ctx.lineTo(12, 15);
+            ctx.lineTo(19, 30);
+            ctx.lineTo(11, 30);
+            ctx.lineTo(4, 15);
+            ctx.lineTo(11, 0);
+            ctx.fill();
+            ctx.stroke();
+            btnLastDay.appendChild(canvas_last_day);
+          } else {
+            btnLastDay.innerHTML = "<";
+            setStyle(btnLastDay, {
+              backgroundColor: 'rgba(214,222,247,1)'
+            });
+          }
+     
+          var spanDt = document.createElement('div');
+          spanDt.innerHTML = this.formatDate(this.date);
+          setStyle(spanDt, {
+            position: 'absolute',
+            margin: '0 auto',
+            top: '5px',
+            right: 0,
+            bottom: 0,
+            left: 0,
+            width: '100px'
+          });
+     
+          var btnTomorrow = document.createElement('div');
+          btnTomorrow.title = "明日";
+          btnTomorrow.onclick = function() {
+            if(me.getCalDate(me.date, 'D', 1).getMonth() + 1 == me.month) {
+              me.date = me.getCalDate(me.date, 'D', 1);
+              me.render({value: me.date});
+              var objContent = createContent.call(me);
+              me.Container.replaceChild(objContent.currentMonth.component, me.Container.children[2]);
+              me.Container.children[2].style.left = 0;
+              me.header.children[2].innerHTML = me.formatDate(me.date);
+              me[0].value = me.formatDate(me.date);
+            } else {
+              var speed_next_month = 1;
+              var speed_current_month = 1;
+              var b_next_month = false;
+              var b_current_month = false;
+              var last_month_left = parseInt(me.content.lastMonth.component.style.left);
+     
+              me.date = me.getCalDate(me.date, 'D', 1);
+              me.render({value: me.date});
+              var objContent = createContent.call(me);
+              me.Container.replaceChild(objContent.currentMonth.component, me.Container.children[3]);
+              me.Container.children[3].style.left = '250px';
+              var timer = setInterval(function() {
+                if(!b_current_month) {
+                  if(parseInt(me.Container.children[2].style.left) > last_month_left) {
+                    me.Container.children[2].style.left = parseInt(me.Container.children[2].style.left) - Math.floor(5 / speed_current_month) + 'px';
+                    speed_current_month += 0.01;
+                  } else {
+                    b_current_month = !b_current_month;
+                  }
+                }
+                if(!b_next_month) {
+                  if(parseInt(me.Container.children[3].style.left) > 0) {
+                    me.Container.children[3].style.left = parseInt(me.Container.children[3].style.left) - Math.floor(5 / speed_next_month) + 'px';
+                    speed_next_month += 0.01;
+                  } else {
+                    b_next_month = !b_next_month;
+                  }
+                }
+                if(b_next_month && b_current_month) {
+                  clearInterval(timer);
+                  me.Container.removeChild(me.Container.children[1]);
+                  me.Container.insertBefore(objContent.nextMonth.component, me.Container.children[2].nextSibling);
+                  me.Container.replaceChild(objContent.lastMonth.component, me.Container.children[1]);
+                  me.Container.children[2].style.left = 0;
+                  me.Container.children[2].style.position = 'absolute';
+                  me.Container.children[3].style.left = '250px';
+                  me.Container.children[3].style.position = 'relative';
+                  me.content.nextMonth = objContent.nextMonth;
+                  me.content.nextMonth.left = 250;
+                  me.content.currentMonth = me.content.nextMonth;
+                  me.content.currentMonth.left = 0;
+                  me.content.lastMonth = objContent.lastMonth;
+                  me.content.lastMonth.left = -275;
+                  me.header.children[2].innerHTML = me.formatDate(me.getFirstdateInMonth());
+                  me[0].value = me.formatDate(me.getFirstdateInMonth());
+                }
+              }, 10);
+            }
+          }
+          setStyle(btnTomorrow, {
+            cursor: 'pointer',
+            height: '30px',
+            width: '30px',
+            display: 'inline',
+            position: 'absolute',
+            right: '31px'
+          });
+     
+          var canvas_tomorrow = document.createElement('canvas');
+          if(canvas_tomorrow.getContext('2d')) {
+            canvas_tomorrow.height = 30;
+            canvas_tomorrow.width = 30;
+            var ctx = canvas_tomorrow.getContext('2d');
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(214,222,247,1)';
+            ctx.fillRect(0, 0, 30, 30);
+            ctx.strokeStyle = 'rgba(251,251,251,1)';
+            ctx.fillStyle = 'rgba(251,251,251,1)';
+            ctx.lineWidth = 1;
+            ctx.moveTo(11, 0);
+            ctx.lineTo(19, 0);
+            ctx.lineTo(26, 15);
+            ctx.lineTo(19, 30);
+            ctx.lineTo(11, 30);
+            ctx.lineTo(18, 15);
+            ctx.lineTo(11, 0);
+            ctx.fill();
+            ctx.stroke();
+            btnTomorrow.appendChild(canvas_tomorrow);
+          } else {
+            btnTomorrow.innerHTML = ">";
+            setStyle(btnTomorrow, {
+              backgroundColor: 'rgba(214,222,247,1)'
+            });
+          }
+     
+          var btnNextMonth = document.createElement('div');
+          btnNextMonth.title = "下月";
+          btnNextMonth.onclick = function() {
+            var speed_next_month = 1;
+            var speed_current_month = 1;
+            var b_next_month = false;
+            var b_current_month = false;
+            var last_month_left = parseInt(me.content.lastMonth.component.style.left);
+            var timer = setInterval(function() {
+              if(!b_next_month) {
+                if(parseInt(me.Container.children[3].style.left) > 0) {
+                  me.Container.children[3].style.left = parseInt(me.Container.children[3].style.left) - Math.floor(5 / speed_next_month) + 'px';
+                  speed_next_month += 0.01;
+                } else {
+                  b_next_month = !b_next_month;
+                }
+              }
+              if(!b_current_month) {
+                if(parseInt(me.Container.children[2].style.left) > last_month_left) {
+                  me.Container.children[2].style.left = parseInt(me.Container.children[2].style.left) - Math.floor(5 / speed_current_month) + 'px';
+                  speed_current_month += 0.01;
+                } else {
+                  b_current_month = !b_current_month;
+                }
+              }
+              if(b_next_month && b_current_month) {
+                clearInterval(timer);
+                me.date = me.getFirstdateInMonth();
+                me.date = me.getCalDate(me.date, 'M', 1);
+                me.render({value: me.date});
+                var objContent = createContent.call(me);
+                me.Container.removeChild(me.Container.children[1]);
+                me.Container.insertBefore(objContent.nextMonth.component, me.Container.children[2].nextSibling);
+                me.Container.replaceChild(objContent.lastMonth.component, me.Container.children[1]);
+                me.Container.children[1].style.left = '-275px';
+                me.Container.children[1].style.position = 'absolute';
+                me.Container.children[2].style.left = '0';
+                me.Container.children[2].style.position = 'absolute';
+                me.content.lastMonth = objContent.lastMonth;
+                me.content.lastMonth.left = -275;
+                me.content.currentMonth = me.content.nextMonth;
+                me.content.currentMonth.left = 0;
+                me.content.nextMonth = objContent.nextMonth;
+                me.content.nextMonth.left = 250;
+                me.header.children[2].innerHTML = me.formatDate(me.getFirstdateInMonth());
+                me[0].value = me.formatDate(me.getFirstdateInMonth());
+              }
+            }, 10);
+          }
+          setStyle(btnNextMonth, {
+            cursor: 'pointer',
+            height: '30px',
+            border: 0,
+            display: 'inline',
+            width: '30px',
+            position: 'absolute',
+            right: 0
+          });
+          var canvas_next_month = document.createElement('canvas');
+          if(canvas_next_month.getContext('2d')) {
+            canvas_next_month.height = 30;
+            canvas_next_month.width = 30;
+            var ctx = canvas_next_month.getContext('2d');
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(214,222,247,1)';
+            ctx.fillRect(0, 0, 30, 30);
+            ctx.strokeStyle = 'rgba(251,251,251,1)';
+            ctx.fillStyle = 'rgba(251,251,251,1)';
+            ctx.lineWidth = 1;
+            ctx.moveTo(15, 0);
+            ctx.lineTo(23, 0);
+            ctx.lineTo(30, 15);
+            ctx.lineTo(23, 30);
+            ctx.lineTo(15, 30);
+            ctx.lineTo(22, 15);
+            ctx.lineTo(15, 0);
+            ctx.fill();
+            ctx.stroke();
+            btnNextMonth.appendChild(canvas_next_month);
+          } else {
+            btnNextMonth.innerHTML = ">>";
+            setStyle(btnNextMonth, {
+              backgroundColor: 'rgba(214,222,247,1)'
+            });
+          }
+          divHeader.appendChild(btnLastMonth);
+          divHeader.appendChild(btnLastDay);
+          divHeader.appendChild(spanDt);
+          divHeader.appendChild(btnTomorrow);
+          divHeader.appendChild(btnNextMonth);
+          return divHeader;
+        }
+     
+        function createContent() {
+          var realDate = this.date;
+          var objContent = {
+            lastMonth: {
+              scope: function() {
+                this.date = this.getFirstdateInMonth();
+                this.date = this.getCalDate(this.date, 'M', -1);
+                this.render({value: this.date});
+              },
+              current: true,
+              left: -275,
+              component: null
+            },
+            currentMonth: {
+              scope: function() {
+                if(this.initialize) {
+                  this.date = realDate;
+                } else {
+                  this.date = new Date();
+                }
+                this.render({value: this.date});
+              },
+              current: true,
+              left: 0,
+              component: null
+            },
+            nextMonth: {
+              scope: function() {
+                this.date = this.getFirstdateInMonth();
+                this.date = this.getCalDate(this.date, 'M', 1);
+                this.render({value: this.date});
+              },
+              current: false,
+              left: 250,
+              component: null
+            }
+          };
+          for(var item in objContent) {
+            objContent[item].scope.call(this);
+            objContent[item].year = this.year;
+            objContent[item].month = this.month;
+            var divContent = document.createElement('div');
+            setStyle(divContent, {
+              height: '250px',
+              position: objContent[item].current ? 'absolute' : 'relative',
+              left: objContent[item].left + 'px'
+            });
+            var tbl = document.createElement('table'),
+                row_obj,
+                cell_obj,
+                row_num = tbl.rows.length,
+                cell_num = 0;
+            setStyle(tbl, {
+              width: '100%'
+            });
+            row_obj = tbl.insertRow(row_num);
+            setStyle(row_obj, {
+              backgroundColor: 'rgba(214,222,247,1)',
+              borderRadius:'5px'
+            });
+            row_obj.setAttribute('head', true);
+            cell_obj = row_obj.insertCell(cell_num++);
+            cell_obj.innerHTML = "一";
+            cell_obj.style.width = "35px";
+            cell_obj = row_obj.insertCell(cell_num++);
+            cell_obj.innerHTML = "二";
+            cell_obj.style.width = "35px";
+            cell_obj = row_obj.insertCell(cell_num++);
+            cell_obj.innerHTML = "三";
+            cell_obj.style.width = "35px";
+            cell_obj = row_obj.insertCell(cell_num++);
+            cell_obj.innerHTML = "四";
+            cell_obj.style.width = "35px";
+            cell_obj = row_obj.insertCell(cell_num++);
+            cell_obj.innerHTML = "五";
+            cell_obj.style.width = "35px";
+            cell_obj = row_obj.insertCell(cell_num++);
+            cell_obj.innerHTML = "六";
+            cell_obj.style.width = "35px";
+            cell_obj = row_obj.insertCell(cell_num++);
+            cell_obj.innerHTML = "日";
+            cell_obj.style.width = "35px";
+            var dtFirst = this.getFirstdateInMonth();
+            var aryDate = [];
+            var aryWeekDate = new Array(7);
+            for (var i = 0; i < this.count; i++) {
+              if (i == 0) {
+                aryWeekDate = new Array(7);
+                aryWeekDate[(dtFirst.getDay() == 0 ? 7 : dtFirst.getDay()) - 1] = dtFirst;
+                var weekNumberForFirstDay = dtFirst.getDay() == 0 ? 7 : dtFirst.getDay();
+                var d = 0;
+                while(weekNumberForFirstDay > 1) {
+                  aryWeekDate[weekNumberForFirstDay - 2] = this.getCalDate(dtFirst, 'D', -1 - d);
+                  weekNumberForFirstDay--;
+                  d++;
+                }
+                if (dtFirst.getDay() == 0) {
+                  aryDate.push(aryWeekDate);
+                }
+              } else {
+                if (i == this.count - 1 && this.getCalDate(dtFirst, 'D', i).getDay() != 0) {
+                  var weekNumberForNextDay = this.getCalDate(dtFirst, 'D', i).getDay();
+                  var n = 0;
+                  if(weekNumberForNextDay == 1){
+                    aryWeekDate = new Array(7);
+                  }
+                  while(weekNumberForNextDay < 8){
+                    aryWeekDate[weekNumberForNextDay - 1] = this.getCalDate(dtFirst, 'D', i + n);
+                    weekNumberForNextDay++;
+                    n++;
+                  }
+                  aryDate.push(aryWeekDate);
+                }
+                if (this.getCalDate(dtFirst, 'D', i).getDay() == 1) {
+                  aryWeekDate = new Array(7);
+                  aryWeekDate[0] = this.getCalDate(dtFirst, 'D', i);
+                } else if (this.getCalDate(dtFirst, 'D', i).getDay() == 0) {
+                  aryWeekDate[6] = this.getCalDate(dtFirst, 'D', i);
+                  aryDate.push(aryWeekDate);
+                } else {
+                  aryWeekDate[this.getCalDate(dtFirst, 'D', i).getDay() - 1] = this.getCalDate(dtFirst, 'D', i);
+                }
+              }
+            }
+            for (var j = 0; j < aryDate.length; j++) {
+              row_obj = tbl.insertRow(tbl.rows.length);
+              row_obj.style.height = '34px';
+              cell_num = 0;
+              for (var k = 0; k < aryDate[j].length; k++) {
+                cell_obj = row_obj.insertCell(cell_num++);
+                cell_obj.innerHTML = aryDate[j][k] != undefined ? aryDate[j][k].getDate() : '';
+                cell_obj.style.width = "30px";
+                cell_obj.style.cursor = "default";
+                cell_obj.style.borderRadius = '17px';
+                //  set style for today
+                if(aryDate[j][k] != undefined
+                  && this.month == new Date().getMonth() + 1
+                  && this.year == new Date().getFullYear()
+                  && aryDate[j][k].getDate() == new Date().getDate()) {
+                  cell_obj.style.border = '1px solid silver';
+                }
+                //  set style for days of other month
+                if(aryDate[j][k] != undefined && this.month != aryDate[j][k].getMonth() + 1) {
+                  cell_obj.style.color = 'silver';
+                  cell_obj.setAttribute('no-current-month', true);
+                  if(aryDate[j][k].getFullYear() < this.year) {
+                    cell_obj.setAttribute('last-month', true);
+                  } else  if(aryDate[j][k].getFullYear() == this.year) {
+                    if(aryDate[j][k].getMonth() + 1 < this.month) {
+                      cell_obj.setAttribute('last-month', true);
+                    } else {
+                      cell_obj.setAttribute('next-month', true);
+                    }
+                  } else {
+                    cell_obj.setAttribute('next-month', true);
+                  }
+                }
+                if(aryDate[j][k] != undefined && this.year == aryDate[j][k].getFullYear()
+                  && this.month == aryDate[j][k].getMonth() + 1
+                  && this.day == aryDate[j][k].getDate()) {
+                  
+                  cell_obj.style.backgroundColor = 'white';
+                  cell_obj.setAttribute('current-date', true);
+                }
+                cell_obj.onmouseover = function () {
+                  this.style.backgroundColor = 'white';
+                  ;
+                }
+                cell_obj.onmouseout = function () {
+                  if(!this.getAttribute('current-date')) {
+                    this.style.backgroundColor = "";
+                  } else {
+                    this.style.color = '';
+                  }
+                  if(this.getAttribute('no-current-month')) {
+                    this.style.color = 'silver';
+                  }
+                }
+              }
+            }
+            var me = this;
+            tbl.onclick = function (e) {
+              var e = (e || event.srcElement).target;
+              if(e.tagName.toString().toLowerCase() == 'td' && !e.parentNode.getAttribute('head')) {
+                if(!e.getAttribute('no-current-month')) {
+                  me.date = new Date(me.date.getFullYear(), me.date.getMonth(), parseInt(e.innerHTML));
+                  me.render({value: me.date});
+                  var objContent = createContent.call(me);
+                  me.Container.replaceChild(objContent.currentMonth.component, me.Container.children[2]);
+                  me.header.children[2].innerHTML = me.formatDate(me.date);
+                  me[0].value = me.formatDate(me.date);
+                } else {
+                  if(e.getAttribute('last-month')) {
+                    var speed_last_month = 1;
+                    var speed_current_month = 1;
+                    var b_last_month = false;
+                    var b_current_month = false;
+                    var next_month_left = parseInt(me.content.nextMonth.component.style.left);
+                    if(me.date.getMonth() == 0) {
+                      me.date = new Date(me.date.getFullYear() - 1, 11, parseInt(e.innerHTML));
+                    } else {
+                      me.date = new Date(me.date.getFullYear(), me.date.getMonth() - 1, parseInt(e.innerHTML));
+                    }
+                    me.render({value: me.date});
+                    var objContent = createContent.call(me);
+                    me.Container.replaceChild(objContent.currentMonth.component, me.Container.children[1]);
+                    me.Container.children[1].style.left = '-275px';
+                    var timer = setInterval(function() {
+                      if(!b_current_month) {
+                        if(parseInt(me.Container.children[2].style.left) < next_month_left) {
+                          me.Container.children[2].style.left = parseInt(me.Container.children[2].style.left) + Math.floor(5 / speed_current_month) + 'px';
+                          speed_current_month += 0.01;
+                        } else {
+                          b_current_month = !b_current_month;
+                        }
+                      }
+                      if(!b_last_month) {
+                        if(parseInt(me.Container.children[1].style.left) < 0) {
+                          me.Container.children[1].style.left = parseInt(me.Container.children[1].style.left) + Math.floor(5 / speed_last_month) + 'px';
+                          speed_last_month += 0.01;
+                        } else {
+                          b_last_month = !b_last_month;
+                        }
+                      }
+                      if(b_last_month && b_current_month) {
+                        clearInterval(timer);
+                        me.Container.removeChild(me.Container.children[3]);
+                        me.Container.insertBefore(objContent.lastMonth.component, me.Container.children[0].nextSibling);
+                        me.Container.replaceChild(objContent.nextMonth.component, me.Container.children[3]);
+                        me.Container.children[2].style.left = 0;
+                        me.Container.children[2].style.position = 'absolute';
+                        me.Container.children[3].style.left = '250px';
+                        me.Container.children[3].style.position = 'relative';
+                        me.content.nextMonth = objContent.nextMonth;
+                        me.content.nextMonth.left = 250;
+                        me.content.currentMonth = me.content.lastMonth;
+                        me.content.currentMonth.left = 0;
+                        me.content.lastMonth = objContent.lastMonth;
+                        me.content.lastMonth.left = -275;
+                        me.header.children[2].innerHTML = me.formatDate(me.getFirstdateInMonth());
+                        me[0].value = me.formatDate(me.getFirstdateInMonth());
+                      }
+                    }, 10);
+                  } else {
+                    var speed_next_month = 1;
+                    var speed_current_month = 1;
+                    var b_next_month = false;
+                    var b_current_month = false;
+                    var last_month_left = parseInt(me.content.lastMonth.component.style.left);
+                    if(me.date.getMonth() == 11) {
+                      me.date = new Date(me.date.getFullYear() + 1, 0, parseInt(e.innerHTML));
+                    } else {
+                      me.date = new Date(me.date.getFullYear(), me.date.getMonth() + 1, parseInt(e.innerHTML));
+                    }
+                    me.render({value: me.date});
+                    var objContent = createContent.call(me);
+                    me.Container.replaceChild(objContent.currentMonth.component, me.Container.children[3]);
+                    me.Container.children[3].style.left = '250px';
+                    var timer = setInterval(function() {
+                      if(!b_current_month) {
+                        if(parseInt(me.Container.children[2].style.left) > last_month_left) {
+                          me.Container.children[2].style.left = parseInt(me.Container.children[2].style.left) - Math.floor(5 / speed_current_month) + 'px';
+                          speed_current_month += 0.01;
+                        } else {
+                          b_current_month = !b_current_month;
+                        }
+                      }
+                      if(!b_next_month) {
+                        if(parseInt(me.Container.children[3].style.left) > 0) {
+                          me.Container.children[3].style.left = parseInt(me.Container.children[3].style.left) - Math.floor(5 / speed_next_month) + 'px';
+                          speed_next_month += 0.01;
+                        } else {
+                          b_next_month = !b_next_month;
+                        }
+                      }
+                      if(b_next_month && b_current_month) {
+                        clearInterval(timer);
+                        me.Container.removeChild(me.Container.children[1]);
+                        me.Container.insertBefore(objContent.nextMonth.component, me.Container.children[2].nextSibling);
+                        me.Container.replaceChild(objContent.lastMonth.component, me.Container.children[1]);
+                        me.Container.children[2].style.left = 0;
+                        me.Container.children[2].style.position = 'absolute';
+                        me.Container.children[3].style.left = '250px';
+                        me.Container.children[3].style.position = 'relative';
+                        me.content.nextMonth = objContent.nextMonth;
+                        me.content.nextMonth.left = 250;
+                        me.content.currentMonth = me.content.nextMonth;
+                        me.content.currentMonth.left = 0;
+                        me.content.lastMonth = objContent.lastMonth;
+                        me.content.lastMonth.left = -275;
+                        me.header.children[2].innerHTML = me.formatDate(me.getFirstdateInMonth());
+                        me[0].value = me.formatDate(me.getFirstdateInMonth());
+                      }
+                    }, 10);
+                  }
+                }
+              }
+            }
+            divContent.appendChild(tbl);
+            objContent[item].component = divContent;
+          }
+          //  reset date to current month
+          this.date = realDate;
+          this.render({value: this.date});
+          return objContent;
+        }
+     
+        function createFooter() {
+          var me = this;
+          var divFooter = document.createElement('div');
+          setStyle(divFooter, {
+            height: '30px',
+            width: '100%',
+            position: 'absolute',
+            bottom: 0
+          });
+          var divContainer = document.createElement('div');
+          setStyle(divContainer, {
+            position: 'relative',
+            width: '95%',
+            height: '30px'
+          });
+          var btnClose= document.createElement('div');
+          setStyle(btnClose, {
+            position: 'absolute',
+            width: '260px',
+            top: 0,
+            right: 0,
+            bottom: '0px',
+            left: 0,
+            cursor: 'pointer',
+            border: '1px solid silver',
+            borderRadius: '4px',
+            backgroundColor: 'rgba(134,222,247,1)',
+            color: '#000',
+          });
+         
+          
+          
+          divContainer.appendChild(btnClose);
+          divFooter.appendChild(divContainer);
+          return divFooter;
+        }
+     
+        function createDateList() {
+          this.Container = document.createElement('div');
+          setStyle(this.Container, {
+            position: 'relative',
+            marginTop: '5px',
+            left:'-50px',
+            borderRadius: '3px',
+            width: '250px',
+            height: '440px',
+            border: '1px solid silver',
+            textAlign: 'center',
+            display: 'block',
+            overflow: 'hidden',
+            zIndex:'10',
+            backgroundColor: 'rgba(134,222,247,1)',
+          });
+     
+          this.header = createHeader.call(this);
+          this.content = createContent.call(this);
+          this.footer = createFooter.call(this);
+          this.Container.appendChild(this.header);
+          for(var item in this.content) {
+            this.Container.appendChild(this.content[item].component);
+          }
+          this.initialize = true;
+          this.Container.appendChild(this.footer);
+          insertAfter(this[0], this.Container);
+        }
+     
+        Dt.fn.choose = function (options) {
+          options = options || {};
+          var defaults = {
+            value: new Date()
+          };
+          var opt = this.extend({}, defaults, options);
+          this.create(opt);
+          this[0].onfocus = function() {
+            this.parentNode.children[1].style.display = '';
+          }
+        }
+     
+        var $ = function (selector) {
+          return Dt(selector);
+        }
+     
+        window.$ = $;
+        })()
+       
+        window.onload = function () {
+          $('#txtDt').choose();
+        }        
+    </script>
+</body>
+</html>
